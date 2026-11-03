@@ -224,8 +224,7 @@ Utiliza la función `mutate` y `across` para identificar los outliers en la vari
 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
-#aplicamos todas las funciones definidas anteriormente a la columna deseada y crearmos nuevas variables con el mutate
-clean_iris_outliers <- clean_iris %>%mutate(across(Petal.Length,list(sigma =reglasigma,hampel   = reglahampel,boxplot  = reglaboxplot,percentil = reglapercentil),.names ="Petal.Length_{.fn}"))
+
 
 ```
 
@@ -238,13 +237,7 @@ En los métodos de detección de outliers analizados, examina los resultados com
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
-resumen_conteo <- clean_iris_outliers %>% summarise(Sigma = sum(Petal.Length_sigma),Hampel = sum(Petal.Length_hampel),Boxplot = sum(Petal.Length_boxplot),Percentil = sum(Petal.Length_percentil))
 
-#nos quedamos con aquellos valores clasificados como outiliners y los ordenamos
-valores_sigma     <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_sigma])
-valores_hampel    <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_hampel])
-valores_boxplot   <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_boxplot])
-valores_percentil <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_percentil])
 ```
 
 ## Ejercicio 8: Representación gráfica
