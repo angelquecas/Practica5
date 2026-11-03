@@ -314,7 +314,7 @@ Vamos a comparar ahora los dos métodos de imputación gráficamente eliminando 
 
 ```{r Solucion ejercicio 10a, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
-
+dirty_iris <- dirty_iris %>%mutate(across(Petal.Length2,list(sigma =reglasigma,hampel   = reglahampel,boxplot  = reglaboxplot,percentil = reglapercentil),.names ="Petal.Length2_{.fn}"))
 
 ```
 
@@ -322,5 +322,19 @@ Vamos a comparar ahora los dos métodos de imputación gráficamente eliminando 
 
 ```{r Solucion ejercicio 10b, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
+#creamos una variable para ver que datos han sido imputados y luego quitamos los outliers
+iris_grafico <- dirty_iris %>%
+  mutate(Estado = ifelse(is.na(Petal.Length), "Imputado", "Original")) %>%
+  filter(!Petal.Length2_percentil)
 
+#creamos el grafico de dispersion, de Petal.Length1 vs Petal.Length2 con el color dependiendo de si son o no imputados, es útili usar jitter, para que no haya solapamientos, y le damos formato con título, subtítulo ...
+ggplot(iris_grafico, aes(x = Petal.Length1, y = Petal.Length2, color = Estado)) +
+  geom_point(position = "jitter") +
+  labs(
+    title = "Comparativa de Métodos de Imputación en Petal.Length",
+    subtitle = "Sin outliers (Regla Percentil) | Media Global vs. Media por Especie",
+    x = "Petal.Length1 (Imputación por Media Global)",
+    y = "Petal.Length2 (Imputación por Especie)",
+    color = "Es imputado"
+  )
 ```
