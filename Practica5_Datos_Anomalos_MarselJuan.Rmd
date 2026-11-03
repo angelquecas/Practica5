@@ -149,7 +149,26 @@ Empleado la función `summarise y across`, calcula la media, la desviación típ
 - Compara los resultados para los dos conjuntos en la variable `Petal.Length`.
 
 ```{r , include = TRUE}
+library(dplyr)
 
+# Definimos la funcion, teniendo en cuenta que se puede querer o no quitar los na
+madm <- function(x, na.rm = TRUE) {
+  mediana <- median(x, na.rm = na.rm)
+  1.4826 * median(abs(x - mediana), na.rm = na.rm)
+}
+
+# ponemos en el across todas las funciones que tenemos que usar, y le aplicamos summarise
+#lo hacemos para el clean_iris
+resumen_clean <- clean_iris %>% summarise(across(where(is.numeric),list(media = ~ mean(.x, na.rm = TRUE),sd = ~ sd(.x, na.rm = TRUE),mediana = ~ median(.x, na.rm = TRUE),madm = ~ madm(.x, na.rm = TRUE),iqr = ~ IQR(.x, na.rm = TRUE))))
+
+#hamos lo mismo en el dirty
+resumen_dirty <- dirty_iris %>%summarise(across(where(is.numeric),list(media = ~ mean(.x, na.rm = TRUE),sd = ~ sd(.x, na.rm = TRUE),mediana = ~ median(.x, na.rm = TRUE),madm = ~ madm(.x, na.rm = TRUE),iqr = ~ IQR(.x, na.rm = TRUE))))
+
+# vamos a ver que le pasa a la variable Petal.Length
+stats_petal_clean <- resumen_clean %>% select(starts_with("Petal.Length"))
+stats_petal_dirty <- resumen_dirty %>% select(starts_with("Petal.Length"))
+
+#si miramos la tabla original, podemos ver que algunas filas que se podian considerar outliers, con un valor demasiado alto en alguna variable, tenian un NA en otra, por eso, al hacer estas operaciones, en el conjunto limpio salen los estadisticos mas bajos, pues no se usan para nada dichos outiliers (al tener otras variables con NA, se han borrado), en cambio utilizando le dirty, SI se usan esos outliers para los calculos
 ```
 
 ## Ejercicio 5: Métodos de detección de outliers
