@@ -74,7 +74,26 @@ Inspecciona visualmente los valores del conjunto de datos (`View`) y ordena de m
 
 ```{r Solucion ejercicio 1, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 # Medidas con valores faltantes, longitudes negativas y cero
+head(dirty_iris[order(dirty_iris$Sepal.Length), ], 10) 
+tail(dirty_iris[order(dirty_iris$Sepal.Length), ], 10)
+orden_Sepal_Length<-dirty_iris[order(dirty_iris$Sepal.Length), ]
+#podemos ver que en la variable Sepal.Length hay datos faltantes, una instancia con un valor 0, no hay ninguna longitud negativa, ademas de unos valores 49 y 73 sospechosamente grandes.
 
+
+head(dirty_iris[order(dirty_iris$Sepal.Width), ], 10) 
+tail(dirty_iris[order(dirty_iris$Sepal.Width), ], 10)
+orden_Sepal_Widht<-dirty_iris[order(dirty_iris$Sepal.Width), ]
+#en la variable Sepal.Widht podemos ver que hay datos faltantes, una instancia con un valor negativo, otra con un valor 0 y dos con valores 29 y 30, sospechosamente grandes.
+
+head(dirty_iris[order(dirty_iris$Petal.Length), ], 10)
+tail(dirty_iris[order(dirty_iris$Petal.Length), ], 10)
+orden_Petal_Length <- dirty_iris[order(dirty_iris$Petal.Length), ]
+#En la variable Petal.Length se pueden observar datos faltantes, una instancia con un valor 0,  y tres con valores 14,23 y 73, sobretodo la de 73 es sospechosamente grande
+
+head(dirty_iris[order(dirty_iris$Petal.Width), ], 10)
+tail(dirty_iris[order(dirty_iris$Petal.Width), ], 10)
+orden_Petal_Width <- dirty_iris[order(dirty_iris$Petal.Width), ]
+#en la variable Petal.Width podemos ver datos faltantes y un valor Inf, que es imposible.
 ```
 
 ## Ejercicio 2: Valores especiales
@@ -94,7 +113,6 @@ Reemplaza, en todas las columnas numéricas del data frame `dirty_iris`, los val
 
 ```{r Solucion ejercicio 2, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 # DEBEMOS ELIMINAR TAMBIEN LOS VALROES IGUALES A CERO YA QUE SE TRATA DE LONGITUDES DE PARTES DE UNA FLOR. NO PUEDEN SER O
-
 
 ```
 
