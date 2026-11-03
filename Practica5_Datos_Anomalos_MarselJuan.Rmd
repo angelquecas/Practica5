@@ -255,7 +255,23 @@ Representa gráficamente los datos de `Petal.Length` (distribución de puntos en
 Nota: usa en `geom_point` con la opción `position='jitter'` para mejorar la legibilidad del gráfico.
 
 ```{r Solucion ejercicio 8, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+library(ggplot2)
+library(tidyr)
 
+
+# Transformamos el data frame de ancho a largo con pivot_longer
+df_long <- clean_iris_outliers %>%pivot_longer(cols = starts_with("Petal.Length_"),names_to = "Metodo",values_to = "Es_Outlier") %>% mutate(Metodo = gsub("Petal.Length_", "", Metodo))
+
+# Generamos el gráfico con ggplot2
+ggplot(df_long, aes(x = Metodo, y = Petal.Length, color = Es_Outlier)) +
+  geom_point(position = position_jitter(width = 0.2, height = 0)) +
+  labs(
+    title = "Comparativa de métodos de detección de outliers",
+    subtitle = "Variable: Petal.Length",
+    x = "Método de Detección",
+    y = "Longitud del Pétalo (cm)",
+    color = "Es outliner"
+  )
 ```
 
 # Imputación de datos
