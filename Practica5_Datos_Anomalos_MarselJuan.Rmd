@@ -238,7 +238,7 @@ En los métodos de detección de outliers analizados, examina los resultados com
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
-
+#mediante summarise y aplicando sumatorios podemos ver cuantos outliers detecta cada metodo
 resumen_conteo <- clean_iris_outliers %>% summarise(Sigma = sum(Petal.Length_sigma),Hampel = sum(Petal.Length_hampel),Boxplot = sum(Petal.Length_boxplot),Percentil = sum(Petal.Length_percentil))
 
 #nos quedamos con aquellos valores clasificados como outiliners y los ordenamos
@@ -267,9 +267,9 @@ ggplot(df_long, aes(x = Metodo, y = Petal.Length, color = Es_Outlier)) +
   geom_point(position = "jitter") +
   labs(
     title = "Comparativa de métodos de detección de outliers",
-    subtitle = "Variable: Petal.Length",
-    x = "Método de Detección",
-    y = "Longitud del Pétalo (cm)",
+    subtitle = "Petal.Length",
+    x = "Método de detección",
+    y = "Longitud del pétalo (cm)",
     color = "Es outliner"
   )
 ```
@@ -313,7 +313,7 @@ Vamos a comparar ahora los dos métodos de imputación gráficamente eliminando 
 - Recalcula las reglas de identificación de outliers (Ejercicio 6) para la nueva variable `Petal.Length2`.
 
 ```{r Solucion ejercicio 10a, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-
+#creamos 4 nuevas variables, una para cada método de la misma forma que en el ejercicio 6
 dirty_iris <- dirty_iris %>%mutate(across(Petal.Length2,list(sigma =reglasigma,hampel   = reglahampel,boxplot  = reglaboxplot,percentil = reglapercentil),.names ="Petal.Length2_{.fn}"))
 
 ```
@@ -331,10 +331,10 @@ iris_grafico <- dirty_iris %>%
 ggplot(iris_grafico, aes(x = Petal.Length1, y = Petal.Length2, color = Estado)) +
   geom_point(position = "jitter") +
   labs(
-    title = "Comparativa de Métodos de Imputación en Petal.Length",
-    subtitle = "Sin outliers (Regla Percentil) | Media Global vs. Media por Especie",
-    x = "Petal.Length1 (Imputación por Media Global)",
-    y = "Petal.Length2 (Imputación por Especie)",
+    title = "Comparativa de métodos de imputación en Petal.Length Sin outliers",
+    subtitle = "Media global vs. Media por especie",
+    x = "Petal.Length1",
+    y = "Petal.Length2",
     color = "Es imputado"
   )
 ```
