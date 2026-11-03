@@ -77,18 +77,24 @@ Inspecciona visualmente los valores del conjunto de datos (`View`) y ordena de m
 head(dirty_iris[order(dirty_iris$Sepal.Length), ], 10) 
 tail(dirty_iris[order(dirty_iris$Sepal.Length), ], 10)
 orden_Sepal_Length<-dirty_iris[order(dirty_iris$Sepal.Length), ]
-#podemos ver que en la variable Sepal.Length hay datos faltantes, una instancia con un valor 0, no hay ninguna longitud negativa, ademas de unos valores 49 y 73 sospechosamente grandes.
+#podemos ver que en la variable Sepal.Length hay datos faltantes,
+#una instancia con un valor 0, no hay ninguna longitud negativa, 
+#ademas de unos valores 49 y 73 sospechosamente grandes.
 
 
 head(dirty_iris[order(dirty_iris$Sepal.Width), ], 10) 
 tail(dirty_iris[order(dirty_iris$Sepal.Width), ], 10)
 orden_Sepal_Widht<-dirty_iris[order(dirty_iris$Sepal.Width), ]
-#en la variable Sepal.Widht podemos ver que hay datos faltantes, una instancia con un valor negativo, otra con un valor 0 y dos con valores 29 y 30, sospechosamente grandes.
+#en la variable Sepal.Widht podemos ver que hay datos faltantes,
+#una instancia con un valor negativo, otra con un valor 0 y dos con valores 29 y 30,
+#sospechosamente grandes.
 
 head(dirty_iris[order(dirty_iris$Petal.Length), ], 10)
 tail(dirty_iris[order(dirty_iris$Petal.Length), ], 10)
 orden_Petal_Length <- dirty_iris[order(dirty_iris$Petal.Length), ]
-#En la variable Petal.Length se pueden observar datos faltantes, una instancia con un valor 0,  y tres con valores 14,23 y 73, sobretodo la de 73 es sospechosamente grande
+#En la variable Petal.Length se pueden observar datos faltantes,
+#una instancia con un valor 0,  y tres con valores 14,23 y 73,
+#sobretodo la de 73 es sospechosamente grande
 
 head(dirty_iris[order(dirty_iris$Petal.Width), ], 10)
 tail(dirty_iris[order(dirty_iris$Petal.Width), ], 10)
@@ -168,7 +174,11 @@ resumen_dirty <- dirty_iris %>%summarise(across(where(is.numeric),list(media = ~
 stats_petal_clean <- resumen_clean %>% select(starts_with("Petal.Length"))
 stats_petal_dirty <- resumen_dirty %>% select(starts_with("Petal.Length"))
 
-#si miramos la tabla original, podemos ver que algunas filas que se podian considerar outliers, con un valor demasiado alto en alguna variable, tenian un NA en otra, por eso, al hacer estas operaciones, en el conjunto limpio salen los estadisticos mas bajos, pues no se usan para nada dichos outiliers (al tener otras variables con NA, se han borrado), en cambio utilizando le dirty, SI se usan esos outliers para los
+#si miramos la tabla original, podemos ver que algunas filas que se podian considerar outliers
+#con un valor demasiado alto en alguna variable, tenian un NA en otra, por eso,
+#al hacer estas operaciones, en el conjunto limpio salen los estadisticos más bajos,
+#pues no se usan para nada dichos outiliers (al tener otras variables con NA, se han borrado), 
+#en cambio utilizando le dirty, SI se usan esos outliers para los
 ```
 
 ## Ejercicio 5: Métodos de detección de outliers
@@ -223,7 +233,8 @@ reglapercentil <- function(x) {
 Utiliza la función `mutate` y `across` para identificar los outliers en la variable `Petal.Length` con todos los métodos de detección de outliers implementados. Genera una columna nueva para cada método. Nota: podría extenderse la aplicación a todas las variables numéricas usando también `mutate`, `across` y `where`.
 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-#aplicamos todas las funciones definidas anteriormente a la columna deseada y crearmos nuevas variables con el mutate
+#aplicamos todas las funciones definidas anteriormente a la columna deseada y
+#crearmos nuevas variables con el mutate
 clean_iris_outliers <- clean_iris %>%mutate(across(Petal.Length,list(sigma =reglasigma,hampel   = reglahampel,boxplot  = reglaboxplot,percentil = reglapercentil),.names ="Petal.Length_{.fn}"))
 
 
@@ -262,7 +273,10 @@ library(tidyr)
 # Transformamos el data frame de ancho a largo con pivot_longer y quitamos el prefijo del método utilizado
 df_long <- clean_iris_outliers %>%pivot_longer(cols = starts_with("Petal.Length_"),names_to = "Metodo",values_to = "Es_Outlier") %>% mutate(Metodo = gsub("Petal.Length_", "", Metodo))
 
-# Generamos el gráfico con ggplot2, donde en x están los métodos, en y la longitud del petalo, y el color depende de si en dicho método, se considera a un dato outliner o no, para hacer esto es muy útili utilizar position="jitter", además, le damos formato al gráfico, con un título, subtítulo, eje X, Y y leyenda
+# Generamos el gráfico con ggplot2, donde en x están los métodos,
+#en y la longitud del petalo, y el color depende de si en dicho método,
+#se considera a un dato outliner o no, para hacer esto es muy útili utilizar position="jitter",
+#además, le damos formato al gráfico, con un título, subtítulo, eje X, Y y leyenda
 ggplot(df_long, aes(x = Metodo, y = Petal.Length, color = Es_Outlier)) +
   geom_point(position = "jitter") +
   labs(
@@ -293,7 +307,8 @@ Se puede realizar una imputación generalizada (usando todos los valores de la v
 #se calcula la media de los valores NO NA
 media_petal <- mean(dirty_iris$Petal.Length, na.rm = TRUE)
 
-#añadimos una columna en la que si Petal.length es NA se le pone la media y en caso contrario se conserva el valor
+#añadimos una columna en la que si Petal.length es NA se le pone la media 
+#y en caso contrario se conserva el valor
 dirty_iris <- dirty_iris %>%
   mutate(Petal.Length1 = ifelse(is.na(Petal.Length), media_petal, Petal.Length))
 ```
@@ -327,7 +342,9 @@ iris_grafico <- dirty_iris %>%
   mutate(Estado = ifelse(is.na(Petal.Length), "Imputado", "Original")) %>%
   filter(!Petal.Length2_percentil)
 
-#creamos el grafico de dispersion, de Petal.Length1 vs Petal.Length2 con el color dependiendo de si son o no imputados, es útili usar jitter, para que no haya solapamientos, y le damos formato con título, subtítulo ...
+#creamos el grafico de dispersion, de Petal.Length1 vs Petal.Length2
+#con el color dependiendo de si son o no imputados, es útili usar jitter,
+#para que no haya solapamientos, y le damos formato con título, subtítulo ...
 ggplot(iris_grafico, aes(x = Petal.Length1, y = Petal.Length2, color = Estado)) +
   geom_point(position = "jitter") +
   labs(
