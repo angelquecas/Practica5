@@ -168,7 +168,7 @@ resumen_dirty <- dirty_iris %>%summarise(across(where(is.numeric),list(media = ~
 stats_petal_clean <- resumen_clean %>% select(starts_with("Petal.Length"))
 stats_petal_dirty <- resumen_dirty %>% select(starts_with("Petal.Length"))
 
-#si miramos la tabla original, podemos ver que algunas filas que se podian considerar outliers, con un valor demasiado alto en alguna variable, tenian un NA en otra, por eso, al hacer estas operaciones, en el conjunto limpio salen los estadisticos mas bajos, pues no se usan para nada dichos outiliers (al tener otras variables con NA, se han borrado), en cambio utilizando le dirty, SI se usan esos outliers para los calculos
+#si miramos la tabla original, podemos ver que algunas filas que se podian considerar outliers, con un valor demasiado alto en alguna variable, tenian un NA en otra, por eso, al hacer estas operaciones, en el conjunto limpio salen los estadisticos mas bajos, pues no se usan para nada dichos outiliers (al tener otras variables con NA, se han borrado), en cambio utilizando le dirty, SI se usan esos outliers para los
 ```
 
 ## Ejercicio 5: Métodos de detección de outliers
@@ -185,17 +185,37 @@ Escribe una función que detecte los outliers de un vector $x$ para cada uno de 
 
 ```{r , include = FALSE}
 # Regla 3 sigma
+reglasigma <- function(x) {
+  mu <- mean(x, na.rm = TRUE)#calculamos la media
+  sigma <- sd(x, na.rm = TRUE)#calculamos la dipersión
+  abs(x - mu) > 3 * sigma #se devuelve que datos cumplen o no con la regla
+}
 
 
 # Identificador Hampel
-
+reglahampel <- function(x) {
+  mediana <- median(x, na.rm = TRUE) #calculamos la mediana
+  madm <- 1.4826 * median(abs(x - mediana), na.rm = TRUE) #calculamos la madm
+  abs(x - mediana) > 3 * madm #se devuelve que datos cumplen o no con la regla
+}
 
 
 # Regla boxplot
-
+reglaboxplot <- function(x) {
+  q <- quantile(x, probs = c(0.25, 0.75), na.rm = TRUE) #calculamos los cuartiles
+  xi <- q[1]#guardamos el q1
+  xs <- q[2]#guardamos 
+  iqr <- xs - xi #calculamos la diferencia entre ambos
+  x < (xi - 1.5 * iqr) | x > (xs + 1.5 * iqr) #vemos cuales cumplen la norma y cuales no
+}
 
 # Percentiles
-
+reglapercentil <- function(x) {
+  p <- quantile(x, probs = c(0.05, 0.95), na.rm = TRUE) #vamos el 5% y el 95%
+  p_low <- p[1] #guardamos el 5%
+  p_high <- p[2]#guardamos el 95%
+  x < p_low | x > p_high #vemos cuales cumplen la norma y cuales no
+}
 ```
 
 ## Ejercicio 6: Detección de outliers
@@ -204,7 +224,8 @@ Utiliza la función `mutate` y `across` para identificar los outliers en la vari
 
 ```{r Solucion ejercicio 6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
-
+#aplicamos todas las funciones definidas anteriormente a la columna deseada y crearmos nuevas variables con el mutate
+clean_iris_outliers <- clean_iris %>%mutate(across(Petal.Length,list(sigma =reglasigma,hampel   = reglahampel,boxplot  = reglaboxplot,percentil = reglapercentil),.names ="Petal.Length_{.fn}"))
 
 ```
 
@@ -217,6 +238,13 @@ En los métodos de detección de outliers analizados, examina los resultados com
 
 ```{r Solucion ejercicio 7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
+resumen_conteo <- clean_iris_outliers %>% summarise(Sigma = sum(Petal.Length_sigma),Hampel = sum(Petal.Length_hampel),Boxplot = sum(Petal.Length_boxplot),Percentil = sum(Petal.Length_percentil))
+
+#nos quedamos con aquellos valores clasificados como outiliners y los ordenamos
+valores_sigma     <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_sigma])
+valores_hampel    <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_hampel])
+valores_boxplot   <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_boxplot])
+valores_percentil <- sort(clean_iris_outliers$Petal.Length[clean_iris_outliers$Petal.Length_percentil])
 ```
 
 ## Ejercicio 8: Representación gráfica
