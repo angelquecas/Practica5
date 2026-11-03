@@ -123,7 +123,13 @@ dirty_iris <- dirty_iris %>% mutate(Sepal.Length = ifelse(!is.finite(Sepal.Lengt
 - Emplea después la función `na.omit` para quedarnos solo con las filas con datos completos en un nuevo data frame `clean_iris`.
 
 ```{r Solucion ejercicio 3, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+completos_bool <- complete.cases(dirty_iris)#devuelve booleans, por lo que hace falta operarlos con un sum
+num_completas <- sum(completos_bool) #vemos cuantas son completas
+total_obs <- nrow(dirty_iris)#vemos cuantas hay en total
+porcentaje_completas <- (num_completas / total_obs) * 100 #calculamos el porcentaje
 
+
+clean_iris <- na.omit(dirty_iris)#quitamos los NA
 ```
 
 # Detección de outliers univariante
